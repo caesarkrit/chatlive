@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rectangle"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+
+    <!--  ListRow Left sied Thumbnail image -->
+    <LinearLayout android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dip"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/oval"
+        android:layout_marginRight="5dip"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
+
+    <!-- Title Of Song-->
+    <TextView
+        android:id="@+id/usersaidTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/thumbnail"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="last message:"
+        android:textColor="#040404"
+        android:typeface="sans"
+        android:textSize="10dip"
+        android:textStyle="normal"/>
+
+    <!-- Artist Name -->
+    <TextView
+        android:id="@+id/messageTV"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/usersaidTV"
+        android:textColor="#343434"
+        android:textSize="15dip"
+        android:textStyle="bold"
+        android:layout_marginTop="1dip"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:text="Hey! Whats up? " />
+
+    <!-- Rightend Duration -->
+    <TextView
+        android:id="@+id/dateTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="10/26/15"
+        android:textSize="10dip"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:layout_above="@+id/messageTV"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <!-- Rightend Arrow -->
+    <TextView
+        android:id="@+id/timeTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="10:30"
+        android:textSize="10dip"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+
+        android:layout_below="@+id/dateTV"
+        android:layout_alignLeft="@+id/dateTV"
+        android:layout_alignStart="@+id/dateTV" />
+
+
+</RelativeLayout>
