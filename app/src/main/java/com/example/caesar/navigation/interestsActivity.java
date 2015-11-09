@@ -77,6 +77,17 @@ public class interestsActivity extends Activity {
 
         webb.setBaseUri("https://great-sarodh.c9.io");
 
+        //calls updateinterests to add interests and begin chat
+        chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    UpdateInterests();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         //button when clicked creates a new taglayout filled with the interests
         adding.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,13 +107,12 @@ public class interestsActivity extends Activity {
                     final TextView tagTextView = (TextView) tagView.findViewById(R.id.tagTextView);
                     imgFavorite = (ImageView) tagView.findViewById(R.id.imageView);
 
-                    //set their id's to 1
-                    //imgFavorite.setId(id);
-                    //tagTextView.setId(id);
-
                     tagTextView.setText(stuff);
-
+                    tagView.setTag(stuff);
                     groupedInterests.add(stuff);
+
+
+                   // Log.i(TAG, String.valueOf(groupedInterests));
 
 
                     imgFavorite.setOnClickListener(
@@ -112,9 +122,10 @@ public class interestsActivity extends Activity {
                                     //remove the tag
                                     ((ViewGroup) tagView.getParent()).removeView(tagView);
 
-                                    //  groupedInterests.get();
-                                    //  groupedInterests.remove();
-                                    //Log.i(TAG, String.valueOf(groupedInterests));
+
+                                    String stringToRemove = (String) tagView.getTag();
+                                    groupedInterests.remove(stringToRemove);
+                                   // Log.i(TAG, String.valueOf(groupedInterests));
 
                                 }
                             });
@@ -129,17 +140,6 @@ public class interestsActivity extends Activity {
 
 
 
-        //calls updateinterests to add interests and begin chat
-        chat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    UpdateInterests();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
 
@@ -151,11 +151,8 @@ public class interestsActivity extends Activity {
         final JSONObject coordinates = new JSONObject();
 
 
-        String addints = interest.getText().toString().trim();
-
-
-        if( addints != null) {
-            array.put(addints);
+        if( groupedInterests != null) {
+            array.put(groupedInterests);
         }
 
 
@@ -231,11 +228,7 @@ public class interestsActivity extends Activity {
                     Matchparams.put("id", hashedId);
                     Log.i(TAG, "RESULT: " + hashedId);
 
-                    try {
                         MatchRequest(Matchparams);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -89,7 +89,7 @@ public class ChatInstance extends Activity {
     @Override
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.chat_instance);
 
         roomList = new ArrayList<String>();
         picbtn = (Button) findViewById(R.id.bn);
@@ -465,11 +465,11 @@ public void onChanged(){
     }
 
 
-    /*@Override
+    @Override
     public void onResume(){
         super.onResume();
         mSocket.on("Chatroom", myMessage);
         mSocket.emit("CreateRoom",roomnum);
 
-    }*/
+    }
 }

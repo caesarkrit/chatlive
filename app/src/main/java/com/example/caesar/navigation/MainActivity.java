@@ -3,11 +3,13 @@ package com.example.caesar.navigation;
 import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 
 public class MainActivity extends TabActivity {
@@ -18,11 +20,13 @@ public class MainActivity extends TabActivity {
         setContentView(R.layout.activity_main);
 
         TabHost tabhost = getTabHost();
+        // CHANGE COLOR OF TEXTVIEW color to white
 
         TabHost.TabSpec tab1 = tabhost.newTabSpec("tab1");
         tab1.setIndicator("Interests");
         Intent i1 = new Intent(MainActivity.this,interestsActivity.class);
         tab1.setContent(i1);
+
 
         TabHost.TabSpec tab2 = tabhost.newTabSpec("tab2");
         tab2.setIndicator("Chats");
@@ -38,6 +42,11 @@ public class MainActivity extends TabActivity {
         tabhost.addTab(tab1);
         tabhost.addTab(tab2);
         tabhost.addTab(tab3);
+
+        for (int i = 0; i < tabhost.getTabWidget().getChildCount();i++){
+            TextView tv = (TextView) tabhost.getTabWidget().getChildAt(i).findViewById(android.R.id.title); //Unselected Tabs
+            tv.setTextColor(Color.parseColor("#ffffff"));
+        }
 
 
     }

@@ -13,7 +13,6 @@ import android.view.WindowManager;
 
 public class TagLayout extends ViewGroup {
     int deviceWidth;
-    int id = 0;
 
     public TagLayout(Context context) {
         this(context, null, 0);
@@ -36,10 +35,6 @@ public class TagLayout extends ViewGroup {
         deviceWidth = deviceDisplay.x;
     }
 
-    /*public void addView(View child,ViewGroup.LayoutParams params) {
-        child.setId(id);
-        id++;
-    }*/
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -106,6 +101,7 @@ public class TagLayout extends ViewGroup {
             // Measure the child.
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
             maxWidth += Math.max(maxWidth, child.getMeasuredWidth());
+            //maxWidth = child.getMeasuredWidth();
             mLeftWidth += child.getMeasuredWidth();
 
             if ((mLeftWidth / deviceWidth) > rowCount) {
