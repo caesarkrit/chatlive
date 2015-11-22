@@ -7,12 +7,15 @@ import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,11 +46,25 @@ public class chatlistActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatlist);
+
         chatlistLV = (ListView) findViewById(R.id.chat_list_view);
         adapter = new ChatListAdapter(this, R.layout.single_chatlist_row);
         adapter2 = new ChatAdapter(ctx,R.layout.messageinstance);
         chatlistLV.setAdapter(adapter);
         chatlistLV.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
+
+        registerForContextMenu(chatlistLV);
+
+        //execute code when
+        chatlistLV.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> list, View view, int position, long id) {
+                Log.i(TAG, "onListItemClick: THIS WAS THE ELEMENT CLICK ON" + position);
+
+            }
+        });
+
         adapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
@@ -58,6 +75,34 @@ public class chatlistActivity extends Activity {
         getChatlist();
 
     }
+
+/*
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.chat_list_view) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            menu.setHeaderTitle(Countries[info.position]);//one of the elements
+            String[] menuItems = getResources().getStringArray(R.array.menu);//list should be the populated array that holds the chat list users
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, i, i, menuItems[i]);
+            }
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        int menuItemIndex = item.getItemId();
+        String[] menuItems = getResources().getStringArray(R.array.menu);
+        String menuItemName = menuItems[menuItemIndex];
+        String listItemName = Countries[info.position];
+
+        TextView text = (TextView)findViewById(R.id.footer);
+        text.setText(String.format("Selected %s for item %s", menuItemName, listItemName));
+        return true;
+    }
+*/
+
 
     public static ChatAdapter getAdapter(int position) {
 

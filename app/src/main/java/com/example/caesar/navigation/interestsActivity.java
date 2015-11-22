@@ -20,9 +20,11 @@ import com.goebl.david.Webb;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class interestsActivity extends Activity {
@@ -35,9 +37,6 @@ public class interestsActivity extends Activity {
     ImageView imgFavorite;
     int id = 1;
     List<String> groupedInterests = new ArrayList<>();
-    int Index;
-    int found;
-    int igot;
 
     //what you need to send interests
     String android_id;
@@ -47,12 +46,22 @@ public class interestsActivity extends Activity {
     final Webb webb = Webb.create();
 
     //other
+
     List<String> roomList;
-    String roomnum;
     public Socket mSocket;
+
+    String roomnum;
+
     String otherId;
     Button chat;
 
+
+    {
+        try {
+            mSocket = IO.socket("https://who-sarodh.c9users.io");
+        }
+        catch (URISyntaxException e){}
+    }
 
 
 
@@ -67,6 +76,7 @@ public class interestsActivity extends Activity {
         }
 
 
+        roomList = new ArrayList<String>();
         interest = (EditText) findViewById(R.id.interest);
         adding = (Button) findViewById(R.id.add);
         chat = (Button) findViewById(R.id.chat);
@@ -75,7 +85,15 @@ public class interestsActivity extends Activity {
         android_id = Settings.Secure.getString(getBaseContext().getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        webb.setBaseUri("https://great-sarodh.c9.io");
+        webb.setBaseUri("https://who-sarodh.c9users.io");
+
+
+        mSocket.connect();
+        //mSocket.on("Chatroom", myMessage);
+        //mSocket.on("typing",onTyping);
+        //mSocket.on("new picture",onPictureReceived);
+
+
 
         //calls updateinterests to add interests and begin chat
         chat.setOnClickListener(new View.OnClickListener() {
@@ -112,7 +130,7 @@ public class interestsActivity extends Activity {
                     groupedInterests.add(stuff);
 
 
-                   // Log.i(TAG, String.valueOf(groupedInterests));
+                    // Log.i(TAG, String.valueOf(groupedInterests));
 
 
                     imgFavorite.setOnClickListener(
@@ -125,19 +143,18 @@ public class interestsActivity extends Activity {
 
                                     String stringToRemove = (String) tagView.getTag();
                                     groupedInterests.remove(stringToRemove);
-                                   // Log.i(TAG, String.valueOf(groupedInterests));
+                                    // Log.i(TAG, String.valueOf(groupedInterests));
 
                                 }
                             });
                     Log.i(TAG, "first id given" + id);
 
-                     id = id + 1;
+                    id = id + 1;
                     interest.setText("");
                 }
             }
 
         });
-
 
 
     }
@@ -151,7 +168,7 @@ public class interestsActivity extends Activity {
         final JSONObject coordinates = new JSONObject();
 
 
-        if( groupedInterests != null) {
+        if (groupedInterests != null) {
             array.put(groupedInterests);
         }
 
@@ -181,7 +198,6 @@ public class interestsActivity extends Activity {
             protected String doInBackground(Void... params) {
                 try {
                     Log.i(TAG, "PARAMS FOR MATCH REQUEST" + id);
-
                     JSONObject response = webb
                             .post("/findmatch")
                             .body(id)
@@ -193,12 +209,14 @@ public class interestsActivity extends Activity {
                     roomnum = response.getString("RoomHash");
                     otherId = response.getString("regid");
                     roomList.add(roomnum);
-                    mSocket.emit("CreateRoom", roomnum,regid );
+                    mSocket.emit("CreateRoom", roomnum, regid);
                     Intent intent2 = new Intent(interestsActivity.this, ChatInstance.class);
 
-                    intent2.putExtra("roomnum", roomnum);
-                    startActivity(intent2);
 
+                    intent2.putExtra("roomnum", roomnum);
+
+                    startActivity(intent2);
+                    Log.i(TAG, "HERERERERE");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -228,7 +246,13 @@ public class interestsActivity extends Activity {
                     Matchparams.put("id", hashedId);
                     Log.i(TAG, "RESULT: " + hashedId);
 
+                    try {
                         MatchRequest(Matchparams);
+                        Log.i(TAG, "HERERERERE575h7hh7h54");
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                 } catch (Exception e) {
                     e.printStackTrace();

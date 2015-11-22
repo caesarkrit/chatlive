@@ -1,9 +1,16 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/background2">
 
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="exit"
+        android:id="@+id/exitbtn"
+        />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -40,7 +47,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/chat_form"
                 android:layout_alignParentBottom="true">
-                <!--android:oritentation="vertical"-->
                 <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

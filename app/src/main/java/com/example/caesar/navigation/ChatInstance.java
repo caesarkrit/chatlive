@@ -49,25 +49,21 @@ import io.socket.emitter.Emitter;
 public class ChatInstance extends Activity {
 
 
-    List<String> roomList;
-    ImageButton Home;
     ListView listview;
-    TextView testmsg;
     EditText chat_text;
     String roomnum;
-    JSONArray data;
+    Button exitbtn;
     private boolean mTyping = false;
     static final String TAG = "GCMDemo";
     static final int REQUEST_CODE = 1;
     Button SEND;
-    Button exitbtn;
     Button picbtn;
     TextView latestMsg;
     ImageButton great;
     boolean position = false;
     ChatAdapter adapter;
     Context ctx = this;
-    public Socket mSocket;
+    //public Socket mSocket;
     private Context mContext;
     private Handler mTypingHandler = new Handler();
     String regid;
@@ -75,7 +71,13 @@ public class ChatInstance extends Activity {
     String mCurrentPhotoPath;
     static final int REQUEST_TAKE_PHOTO = 1;
 
+    interestsActivity Msocket = new interestsActivity();
+    public Socket mSockeT = Msocket.mSocket;
 
+    interestsActivity RoomList = new interestsActivity();
+    List<String> AroomList = RoomList.roomList;
+
+/*
 
     {
         try {
@@ -83,6 +85,7 @@ public class ChatInstance extends Activity {
         }
         catch (URISyntaxException e){}
     }
+*/
 
 
 
@@ -91,7 +94,6 @@ public class ChatInstance extends Activity {
         super.onCreate(saveInstanceState);
         setContentView(R.layout.chat_instance);
 
-        roomList = new ArrayList<String>();
         picbtn = (Button) findViewById(R.id.bn);
         final String senderID = "1048700326431";
         mContext = this;
@@ -115,51 +117,63 @@ public class ChatInstance extends Activity {
         listview = (ListView) findViewById(R.id.chat_list_view);
         chat_text = (EditText) findViewById(R.id.chatTxt);
         latestMsg = (TextView) findViewById(R.id.messageTV);
+        exitbtn = (Button) findViewById(R.id.exitbtn);
 
      //   testmsg = (TextView) findViewById(R.id.livestreamTV);
         SEND = (Button) findViewById(R.id.send_button);
-      //  adapter = new ChatAdapter(ctx,R.layout.activity_chat);
+        adapter = new ChatAdapter(ctx,R.layout.messageinstance);
 
 
 
 
 
-        mSocket.connect();
-        mSocket.on("Chatroom", myMessage);
-        mSocket.on("typing",onTyping);
-        mSocket.on("new picture",onPictureReceived);
+        //mSocket.connect();
+        mSockeT.on("Chatroom", myMessage);
+        mSockeT.on("typing", onTyping);
+        mSockeT.on("new picture", onPictureReceived);
 
         listview.setAdapter(adapter);
 
+     /*   great.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent2 = new Intent(ChatInstance.this, ChatListAdapter.class);
+                startActivity(intent2);
 
-        chat_text.addTextChangedListener(new TextWatcher(){
-@Override
-public void beforeTextChanged(CharSequence s,int start,int count,int after){
 
-        }
+            }
+        });*/
 
-@Override
-public void onTextChanged(CharSequence s,int start,int before,int count){
-        if(!mTyping){
-        mTyping=true;
-        mSocket.emit("typing",true);
-        }
-        mTypingHandler.removeCallbacks(onTypingTimeout);
-        mTypingHandler.postDelayed(onTypingTimeout,600);
-        }
+        chat_text.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-@Override
-public void afterTextChanged(Editable s){
+            }
 
-        }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!mTyping) {
+                    mTyping = true;
+                    mSockeT.emit("typing", true);
+                }
+                mTypingHandler.removeCallbacks(onTypingTimeout);
+                mTypingHandler.postDelayed(onTypingTimeout, 600);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
+
+
         listview.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+
         adapter.registerDataSetObserver(new DataSetObserver(){
-@Override
-public void onChanged(){
-        super.onChanged();
-        listview.setSelection(adapter.getCount()-1);
-        }
+            @Override
+            public void onChanged(){
+                super.onChanged();
+                listview.setSelection(adapter.getCount()-1);
+            }
         });
 
 
@@ -168,9 +182,11 @@ public void onChanged(){
             @Override
             public void onClick(View v) {
                 Bundle extras = getIntent().getExtras();
+
                 if (extras != null) {
+
                     roomnum = extras.getString("roomnum");
-                    roomList.add(roomnum);
+                    //AroomList.add(roomnum);
                 }
                 String mymessage = chat_text.getText().toString().trim();
                 chat_text.setText(" ");
@@ -178,26 +194,24 @@ public void onChanged(){
 
                 int i = adapter.getCount() - 1;
 
-                Log.i(TAG, "THE ADAPTER COUNT: " + i);
-
                 if (i > 0) {
                     DataProvider d = adapter.getItem(i);
                     if (d.getType() == DataProvider.TYPE_ACTION) {
                         Log.i(TAG, "its a typing msg");
                         adapter.chat_list.remove(i);
                         adapter.notifyDataSetChanged();
-                        mSocket.emit("Chatroom", mymessage);
+                        mSockeT.emit("Chatroom", mymessage);
                         adapter.add(new DataProvider(position, mymessage, DataProvider.TYPE_MESSAGE, false));
                         adapter.notifyDataSetChanged();
                         adapter.add(new DataProvider(position, "Typing...", DataProvider.TYPE_ACTION, true));
                     } else {
-                        mSocket.emit("Chatroom", mymessage);
+                        mSockeT.emit("Chatroom", mymessage);
                         adapter.add(new DataProvider(position, mymessage, DataProvider.TYPE_MESSAGE, false));
                     }
                     adapter.notifyDataSetChanged();
                     scrolltoBottom();
                 } else {
-                    mSocket.emit("Chatroom", mymessage);
+                    mSockeT.emit("Chatroom", mymessage);
                     new CLDataProvider(mymessage);
                     adapter.add(new DataProvider(position, mymessage, DataProvider.TYPE_MESSAGE, false));
                     adapter.notifyDataSetChanged();
@@ -206,15 +220,26 @@ public void onChanged(){
 
             }
         });
+
         picbtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                Log.i(TAG,"rfghfghfghfhg");
                 dispatchTakePictureIntent();
             }
         });
+        exitbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSockeT.emit("Pause", roomnum);
+                mSockeT.off("Chatroom");
 
-
+                mSockeT.disconnect();
+                finish();
+                System.exit(0);
+            }
+        });
 
     }
 
@@ -299,6 +324,7 @@ public void onChanged(){
     }
 
     private void dispatchTakePictureIntent() {
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -312,10 +338,11 @@ public void onChanged(){
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Log.i(TAG, "photofile url" +Uri.fromFile(photoFile));
+                Log.i(TAG, "photofile url" + Uri.fromFile(photoFile));
 
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                 startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+
             }
         }
     }
@@ -456,7 +483,7 @@ public void onChanged(){
             if (!mTyping) return;
             Log.i(TAG, "IN ON TYPING TIMEOUT");
             mTyping = false;
-            mSocket.emit("typing", false);
+            mSockeT.emit("typing", false);
         }
     };
 
@@ -465,11 +492,11 @@ public void onChanged(){
     }
 
 
-    @Override
+  /*  @Override
     public void onResume(){
         super.onResume();
         mSocket.on("Chatroom", myMessage);
         mSocket.emit("CreateRoom",roomnum);
 
-    }
+    }*/
 }
